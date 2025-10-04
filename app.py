@@ -4,14 +4,8 @@ import os
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your-secret-key-here'
-# Use PostgreSQL on Render, SQLite locally
-database_url = os.environ.get('DATABASE_URL')
-if database_url:
-    # Render provides DATABASE_URL for PostgreSQL
-    app.config['SQLALCHEMY_DATABASE_URI'] = database_url.replace('postgres://', 'postgresql://')
-else:
-    # Local development with SQLite
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///soccer_championship.db'
+# Use SQLite for database
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///soccer_championship.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Import and initialize models
