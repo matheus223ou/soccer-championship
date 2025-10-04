@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+
+{% block title %}{{ team.name }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h2 class="mb-0">
+                            <i class="fas fa-shield-alt me-2"></i>{{ team.name }}
+                        </h2>
+                        <div>
+                            <a href="{{ url_for('team.edit_team', team_id=team.id) }}" class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-edit"></i> Edit
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    {% if team.logo_url %}
+                    <div class="text-center mb-4">
+                        <img src="{{ team.logo_url }}" alt="{{ team.name }} Logo" class="img-fluid" style="max-height: 150px;">
+                    </div>
+                    {% endif %}
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>Team Information</h5>
+                            <ul class="list-unstyled">
+                                <li><strong>Tournament:</strong> {{ team.tournament.name }}</li>
+                                <li><strong>Country:</strong> {{ team.country }}</li>
+                                <li><strong>City:</strong> {{ team.city }}</li>
+                                <li><strong>Founded:</strong> {{ team.founded_year }}</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Statistics</h5>
+                            <ul class="list-unstyled">
+                                <li><strong>Matches Played:</strong> {{ stats.matches_played }}</li>
+                                <li><strong>Wins:</strong> <span class="text-success">{{ stats.wins }}</span></li>
+                                <li><strong>Draws:</strong> <span class="text-warning">{{ stats.draws }}</span></li>
+                                <li><strong>Losses:</strong> <span class="text-danger">{{ stats.losses }}</span></li>
+                                <li><strong>Points:</strong> <span class="text-primary fw-bold">{{ stats.points }}</span></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('team.add_player', team_id=team.id) }}" class="btn btn-primary">
+                            <i class="fas fa-plus me-2"></i>Add Player
+                        </a>
+                        <a href="{{ url_for('team.team_players', team_id=team.id) }}" class="btn btn-outline-primary">
+                            <i class="fas fa-users me-2"></i>View Players
+                        </a>
+                        <a href="{{ url_for('team.team_matches', team_id=team.id) }}" class="btn btn-outline-success">
+                            <i class="fas fa-gamepad me-2"></i>View Matches
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Players Section -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-users me-2"></i>Team Players ({{ players|length }})
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if players %}
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Name</th>
+                                        <th>Position</th>
+                                        <th>Nationality</th>
+                                        <th>Age</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for player in players %}
+                                    <tr>
+                                        <td>{{ player.jersey_number or '-' }}</td>
+                                        <td>{{ player.full_name }}</td>
+                                        <td><span class="badge bg-info">{{ player.get_position_display() }}</span></td>
+                                        <td>{{ player.nationality or '-' }}</td>
+                                        <td>{{ player.age or '-' }}</td>
+                                        <td>
+                                            <a href="#" class="btn btn-outline-primary btn-sm">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">No players yet</h5>
+                            <p class="text-muted">Add players to this team to get started!</p>
+                            <a href="{{ url_for('team.add_player', team_id=team.id) }}" class="btn btn-primary">
+                                <i class="fas fa-plus me-2"></i>Add First Player
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Back Button -->
+    <div class="mt-4">
+        <a href="{{ url_for('tournament.view_tournament', tournament_id=team.tournament_id) }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Back to Tournament
+        </a>
+    </div>
+</div>
+{% endblock %}

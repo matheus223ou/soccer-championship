@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+
+{% block title %}New Match{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="mb-0">
+                        <i class="fas fa-gamepad me-2"></i>Schedule New Match
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="tournament_id" class="form-label">Tournament *</label>
+                                    <select class="form-select" id="tournament_id" name="tournament_id" required>
+                                        <option value="">Select Tournament</option>
+                                        {% for tournament in tournaments %}
+                                        <option value="{{ tournament.id }}" {% if selected_tournament_id and selected_tournament_id == tournament.id %}selected{% endif %}>
+                                            {{ tournament.name }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="date" class="form-label">Date & Time *</label>
+                                    <input type="datetime-local" class="form-control" id="date" name="date" required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="home_team_id" class="form-label">Home Team *</label>
+                                    <select class="form-select" id="home_team_id" name="home_team_id" required>
+                                        <option value="">Select Home Team</option>
+                                        {% for team in teams %}
+                                        <option value="{{ team.id }}">{{ team.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="away_team_id" class="form-label">Away Team *</label>
+                                    <select class="form-select" id="away_team_id" name="away_team_id" required>
+                                        <option value="">Select Away Team</option>
+                                        {% for team in teams %}
+                                        <option value="{{ team.id }}">{{ team.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="stage" class="form-label">Stage *</label>
+                                    <select class="form-select" id="stage" name="stage" required>
+                                        <option value="">Select Stage</option>
+                                        <option value="group_stage">Group Stage</option>
+                                        <option value="round_of_16">Round of 16</option>
+                                        <option value="quarter_final">Quarter Final</option>
+                                        <option value="semi_final">Semi Final</option>
+                                        <option value="final">Final</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="group_name" class="form-label">Group Name</label>
+                                    <input type="text" class="form-control" id="group_name" name="group_name" placeholder="e.g., Group A">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="venue" class="form-label">Venue</label>
+                            <input type="text" class="form-control" id="venue" name="venue" placeholder="Stadium name">
+                        </div>
+                        
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Schedule Match
+                            </button>
+                            {% if selected_tournament_id %}
+                            <a href="{{ url_for('tournament.view_tournament', tournament_id=selected_tournament_id) }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Back to Tournament
+                            </a>
+                            {% else %}
+                            <a href="{{ url_for('main.tournaments') }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Back to Tournaments
+                            </a>
+                            {% endif %}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Auto-select tournament when page loads with tournament_id parameter
+document.addEventListener('DOMContentLoaded', function() {
+    const tournamentSelect = document.getElementById('tournament_id');
+    const homeTeamSelect = document.getElementById('home_team_id');
+    const awayTeamSelect = document.getElementById('away_team_id');
+    
+    // Filter teams when tournament changes
+    tournamentSelect.addEventListener('change', function() {
+        const tournamentId = this.value;
+        if (tournamentId) {
+            // You could implement AJAX here to filter teams by tournament
+            // For now, we'll just enable/disable the team selects
+            homeTeamSelect.disabled = false;
+            awayTeamSelect.disabled = false;
+        } else {
+            homeTeamSelect.disabled = true;
+            awayTeamSelect.disabled = true;
+        }
+    });
+    
+    // Prevent selecting same team for both home and away
+    homeTeamSelect.addEventListener('change', function() {
+        if (this.value === awayTeamSelect.value && this.value !== '') {
+            alert('Home and away teams cannot be the same!');
+            this.value = '';
+        }
+    });
+    
+    awayTeamSelect.addEventListener('change', function() {
+        if (this.value === homeTeamSelect.value && this.value !== '') {
+            alert('Home and away teams cannot be the same!');
+            this.value = '';
+        }
+    });
+});
+</script>
+{% endblock %}

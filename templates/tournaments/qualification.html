@@ -1,0 +1,227 @@
+{% extends "base.html" %}
+
+{% block title %}Team Qualification - {{ tournament.name }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1>
+                <i class="fas fa-trophy me-3 text-warning"></i>
+                Team Qualification
+            </h1>
+            <p class="text-muted">{{ tournament.name }} - Select teams for knockout stage</p>
+        </div>
+        <div class="text-end">
+            <a href="{{ url_for('tournament.view_tournament', tournament_id=tournament.id) }}" class="btn btn-outline-secondary me-2">
+                <i class="fas fa-arrow-left me-2"></i>Back to Tournament
+            </a>
+            <button class="btn btn-success" onclick="saveQualification()">
+                <i class="fas fa-save me-2"></i>Save Qualification
+            </button>
+        </div>
+    </div>
+
+    <!-- Instructions -->
+    <div class="alert alert-info mb-4">
+        <i class="fas fa-info-circle me-2"></i>
+        <strong>Instructions:</strong> For each group, select how many teams should qualify for the knockout stage. 
+        Teams will be selected automatically based on their position in the group standings (highest points first).
+    </div>
+
+    <!-- Qualification Form -->
+    <form id="qualificationForm">
+        <div class="row">
+            {% for group_name, standings in group_standings.items() %}
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-layer-group me-2"></i>
+                            Group {{ group_name }}
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- Qualification Selector -->
+                        <div class="mb-3">
+                            <label for="group_{{ group_name }}" class="form-label">
+                                <strong>Teams to Qualify:</strong>
+                            </label>
+                            <select class="form-select" id="group_{{ group_name }}" name="group_{{ group_name }}">
+                                <option value="0">None</option>
+                                {% for i in range(1, standings|length + 1) %}
+                                <option value="{{ i }}">{{ i }} team{{ 's' if i > 1 else '' }}</option>
+                                {% endfor %}
+                                <!-- Allow up to 8 teams per group for flexibility -->
+                                {% if standings|length < 8 %}
+                                {% for i in range(standings|length + 1, 9) %}
+                                <option value="{{ i }}">{{ i }} teams (if more added)</option>
+                                {% endfor %}
+                                {% endif %}
+                            </select>
+                        </div>
+
+                        <!-- Group Standings Preview -->
+                        <div class="group-preview">
+                            <h6 class="text-muted mb-2">Current Standings:</h6>
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Pos</th>
+                                            <th>Team</th>
+                                            <th>Pts</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for standing in standings %}
+                                        <tr class="{% if loop.index <= 2 %}table-success{% elif loop.index <= 4 %}table-warning{% endif %}">
+                                            <td class="text-center fw-bold">{{ loop.index }}</td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    {% if standing.team.logo_url %}
+                                                        <img src="{{ standing.team.logo_url }}" alt="{{ standing.team.name }} Logo" class="img-fluid rounded me-1" style="width: 20px; height: 20px; object-fit: cover;">
+                                                    {% else %}
+                                                        <div class="bg-light rounded d-flex align-items-center justify-content-center me-1" style="width: 20px; height: 20px;">
+                                                            <i class="fas fa-shield-alt text-muted" style="font-size: 10px;"></i>
+                                                        </div>
+                                                    {% endif %}
+                                                    <span class="fw-bold">{{ standing.team.name }}</span>
+                                                </div>
+                                            </td>
+                                            <td class="text-center">
+                                                <span class="badge bg-primary">{{ standing.points }}</span>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </form>
+
+    <!-- Qualified Teams Preview -->
+    <div class="mt-4">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-check-circle me-2"></i>
+                    Qualified Teams Preview
+                </h5>
+            </div>
+            <div class="card-body">
+                <div id="qualifiedPreview">
+                    <p class="text-muted">Select teams from groups above to see preview</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Update preview when qualification changes
+document.addEventListener('DOMContentLoaded', function() {
+    const selects = document.querySelectorAll('select[name^="group_"]');
+    selects.forEach(select => {
+        select.addEventListener('change', updatePreview);
+    });
+    updatePreview();
+});
+
+function updatePreview() {
+    const qualifiedTeams = [];
+    const selects = document.querySelectorAll('select[name^="group_"]');
+    
+    selects.forEach(select => {
+        const groupName = select.name.replace('group_', '');
+        const teamsToQualify = parseInt(select.value);
+        
+        if (teamsToQualify > 0) {
+            // Get team names from the table in the same card
+            const card = select.closest('.card');
+            const teamRows = card.querySelectorAll('tbody tr');
+            
+            for (let i = 0; i < Math.min(teamsToQualify, teamRows.length); i++) {
+                const teamName = teamRows[i].querySelector('td:nth-child(2) span').textContent;
+                qualifiedTeams.push({
+                    group: groupName,
+                    team: teamName,
+                    position: i + 1
+                });
+            }
+        }
+    });
+    
+    const previewDiv = document.getElementById('qualifiedPreview');
+    
+    if (qualifiedTeams.length === 0) {
+        previewDiv.innerHTML = '<p class="text-muted">Select teams from groups above to see preview</p>';
+        return;
+    }
+    
+    let html = `<div class="row">`;
+    qualifiedTeams.forEach(team => {
+        html += `
+            <div class="col-md-6 col-lg-4 mb-2">
+                <div class="d-flex align-items-center p-2 bg-light rounded">
+                    <span class="badge bg-primary me-2">${team.position}</span>
+                    <span class="fw-bold">${team.team}</span>
+                    <small class="text-muted ms-auto">Group ${team.group}</small>
+                </div>
+            </div>
+        `;
+    });
+    html += `</div>`;
+    
+    previewDiv.innerHTML = html;
+}
+
+function saveQualification() {
+    const form = document.getElementById('qualificationForm');
+    const formData = new FormData(form);
+    
+    // Convert to JSON
+    const data = {};
+    for (let [key, value] of formData.entries()) {
+        data[key] = value;
+    }
+    
+    // Show loading
+    const button = event.target;
+    const originalText = button.innerHTML;
+    button.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Saving...';
+    button.disabled = true;
+    
+    fetch(`{{ url_for('tournament.manage_qualification', tournament_id=tournament.id) }}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Qualification settings saved successfully!');
+            window.location.href = '{{ url_for("tournament.knockout_management", tournament_id=tournament.id) }}';
+        } else {
+            alert('Error: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error saving qualification settings. Please try again.');
+    })
+    .finally(() => {
+        button.innerHTML = originalText;
+        button.disabled = false;
+    });
+}
+</script>
+{% endblock %}

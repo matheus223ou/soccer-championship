@@ -1,0 +1,305 @@
+/* Custom styles for Soccer Championship Manager */
+
+/* General Styles */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
+}
+
+/* Navigation */
+.navbar-brand {
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+.navbar-nav .nav-link {
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.navbar-nav .nav-link:hover {
+    color: #ffc107 !important;
+}
+
+/* Cards */
+.card {
+    border: none;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    transition: box-shadow 0.3s ease;
+}
+
+.card:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.card-header {
+    border-bottom: none;
+    font-weight: 600;
+}
+
+/* Buttons */
+.btn {
+    border-radius: 0.375rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.15);
+}
+
+.btn-lg {
+    padding: 0.75rem 1.5rem;
+    font-size: 1.1rem;
+}
+
+/* Jumbotron */
+.jumbotron {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border: 1px solid #dee2e6;
+}
+
+/* Tournament Cards */
+.card.border-primary {
+    border-color: #007bff !important;
+}
+
+.card.border-primary:hover {
+    border-color: #0056b3 !important;
+}
+
+/* Match Display */
+.match-score {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #28a745;
+}
+
+.match-vs {
+    font-size: 1.2rem;
+    color: #6c757d;
+}
+
+/* Team Colors */
+.team-primary {
+    color: var(--team-primary-color, #007bff);
+}
+
+.team-secondary {
+    color: var(--team-secondary-color, #6c757d);
+}
+
+/* Statistics */
+.stat-number {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #007bff;
+}
+
+.stat-label {
+    font-size: 0.875rem;
+    color: #6c757d;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Standings Table */
+.standings-table th {
+    background-color: #f8f9fa;
+    border-top: none;
+    font-weight: 600;
+    color: #495057;
+}
+
+.standings-table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+.position-1 {
+    background-color: #fff3cd !important;
+    border-left: 4px solid #ffc107;
+}
+
+.position-2 {
+    background-color: #e2e3e5 !important;
+    border-left: 4px solid #6c757d;
+}
+
+.position-3 {
+    background-color: #f8d7da !important;
+    border-left: 4px solid #dc3545;
+}
+
+/* Tournament Bracket */
+.bracket-stage {
+    margin-bottom: 2rem;
+}
+
+.bracket-match {
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 0.375rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.bracket-match:hover {
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.15);
+}
+
+/* Live Match */
+.live-match {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.live-minute {
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: center;
+}
+
+.live-score {
+    font-size: 2rem;
+    font-weight: bold;
+    text-align: center;
+}
+
+/* Player Cards */
+.player-card {
+    border: 1px solid #dee2e6;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+}
+
+.player-card:hover {
+    border-color: #007bff;
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 123, 255, 0.15);
+}
+
+.player-number {
+    background-color: #007bff;
+    color: white;
+    border-radius: 50%;
+    width: 2.5rem;
+    height: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    margin-right: 1rem;
+}
+
+/* Search Results */
+.search-result {
+    border: 1px solid #dee2e6;
+    border-radius: 0.375rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+}
+
+.search-result:hover {
+    border-color: #007bff;
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 123, 255, 0.15);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .jumbotron {
+        padding: 2rem 1rem !important;
+    }
+    
+    .jumbotron h1 {
+        font-size: 2rem;
+    }
+    
+    .btn-lg {
+        padding: 0.5rem 1rem;
+        font-size: 1rem;
+    }
+    
+    .stat-number {
+        font-size: 1.5rem;
+    }
+}
+
+/* Loading Animation */
+.loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #007bff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Success/Error Messages */
+.alert {
+    border: none;
+    border-radius: 0.5rem;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    border-left: 4px solid #28a745;
+}
+
+.alert-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+    border-left: 4px solid #dc3545;
+}
+
+.alert-warning {
+    background-color: #fff3cd;
+    color: #856404;
+    border-left: 4px solid #ffc107;
+}
+
+.alert-info {
+    background-color: #d1ecf1;
+    color: #0c5460;
+    border-left: 4px solid #17a2b8;
+}
+
+/* Footer */
+footer {
+    margin-top: auto;
+}
+
+footer h5 {
+    color: #ffc107;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}

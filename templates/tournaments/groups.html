@@ -1,0 +1,401 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Groups - {{ tournament.name }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1>
+                <i class="fas fa-layer-group me-3 text-primary"></i>
+                Group Management
+            </h1>
+            <p class="text-muted">{{ tournament.name }} - Create and manage tournament groups</p>
+        </div>
+        <div>
+            <button class="btn btn-success me-2" onclick="showCreateGroupModal()">
+                <i class="fas fa-plus me-2"></i>Create New Group
+            </button>
+            <a href="{{ url_for('tournament.view_tournament', tournament_id=tournament.id) }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Back to Tournament
+            </a>
+        </div>
+    </div>
+
+    <!-- Group Statistics -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card border-primary">
+                <div class="card-body text-center">
+                    <h3 class="text-primary">{{ existing_groups|length }}</h3>
+                    <p class="mb-0">Total Groups</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-success">
+                <div class="card-body text-center">
+                    <h3 class="text-success">{{ tournament.teams|length }}</h3>
+                    <p class="mb-0">Total Teams</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-info">
+                <div class="card-body text-center">
+                    <h3 class="text-info">{{ tournament.teams|selectattr('group_name')|list|length }}</h3>
+                    <p class="mb-0">Assigned Teams</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-warning">
+                <div class="card-body text-center">
+                    <h3 class="text-warning">{{ tournament.teams|rejectattr('group_name')|list|length }}</h3>
+                    <p class="mb-0">Unassigned Teams</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Groups Display -->
+    {% if existing_groups %}
+    <div class="row">
+        {% for group in existing_groups %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card border-primary h-100">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-layer-group me-2"></i>
+                        Group {{ group }}
+                    </h5>
+                    <div class="btn-group btn-group-sm">
+                        <button class="btn btn-outline-light btn-sm" onclick="showRenameGroupModal('{{ group }}')" title="Rename Group">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-outline-light btn-sm" onclick="deleteGroup('{{ group }}')" title="Delete Group">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    {% set group_teams = teams_by_group[group] %}
+                    {% if group_teams %}
+                        <div class="mb-3">
+                            <small class="text-muted">{{ group_teams|length }} teams</small>
+                        </div>
+                        {% for team in group_teams %}
+                        <div class="d-flex align-items-center mb-2 p-2 border rounded">
+                            <div class="me-2">
+                                {% if team.logo_url %}
+                                    <img src="{{ team.logo_url }}" alt="Logo" class="rounded" style="width: 30px; height: 30px; object-fit: cover;">
+                                {% else %}
+                                    <div class="bg-secondary rounded d-flex align-items-center justify-content-center" style="width: 30px; height: 30px;">
+                                        <i class="fas fa-shield-alt text-white"></i>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="flex-grow-1">
+                                <div class="fw-bold">{{ team.name }}</div>
+                                <small class="text-muted">{{ team.city }}, {{ team.country }}</small>
+                            </div>
+                            <button class="btn btn-outline-danger btn-sm" onclick="removeTeamFromGroup('{{ team.id }}')" title="Remove from Group">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center py-3">
+                            <i class="fas fa-users fa-2x text-muted mb-2"></i>
+                            <p class="text-muted mb-0">No teams assigned</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-5">
+        <i class="fas fa-layer-group fa-4x text-muted mb-4"></i>
+        <h3 class="text-muted">No Groups Created Yet</h3>
+        <p class="text-muted mb-4">Create your first group to start organizing teams!</p>
+        <button class="btn btn-success btn-lg" onclick="showCreateGroupModal()">
+            <i class="fas fa-plus me-2"></i>Create First Group
+        </button>
+    </div>
+    {% endif %}
+
+    <!-- Unassigned Teams -->
+    {% set unassigned_teams = tournament.teams|rejectattr('group_name')|list %}
+    {% if unassigned_teams %}
+    <div class="card mt-4">
+        <div class="card-header bg-warning text-dark">
+            <h5 class="mb-0">
+                <i class="fas fa-users me-2"></i>
+                Unassigned Teams ({{ unassigned_teams|length }})
+            </h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                {% for team in unassigned_teams %}
+                <div class="col-md-6 col-lg-4 mb-3">
+                    <div class="d-flex align-items-center p-3 border rounded">
+                        <div class="me-3">
+                            {% if team.logo_url %}
+                                <img src="{{ team.logo_url }}" alt="Logo" class="rounded" style="width: 40px; height: 40px; object-fit: cover;">
+                            {% else %}
+                                <div class="bg-secondary rounded d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                    <i class="fas fa-shield-alt text-white"></i>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="flex-grow-1">
+                            <div class="fw-bold">{{ team.name }}</div>
+                            <small class="text-muted">{{ team.city }}, {{ team.country }}</small>
+                        </div>
+                        <div class="dropdown">
+                            <button class="btn btn-outline-primary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-plus me-1"></i>Assign
+                            </button>
+                            <ul class="dropdown-menu">
+                                {% for group in existing_groups %}
+                                <li><a class="dropdown-item" href="#" onclick="assignTeamToGroup('{{ team.id }}', '{{ group }}')">Group {{ group }}</a></li>
+                                {% endfor %}
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="#" onclick="showCreateGroupModal()">Create New Group</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Create Group Modal -->
+<div class="modal fade" id="createGroupModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title">
+                    <i class="fas fa-plus me-2"></i>Create New Group
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="createGroupForm">
+                    <div class="mb-3">
+                        <label for="groupName" class="form-label">Group Name</label>
+                        <input type="text" class="form-control" id="groupName" placeholder="A, B, C, D, etc." required>
+                        <div class="form-text">Enter a single letter or name for the group</div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-success" onclick="createGroup()">
+                    <i class="fas fa-plus me-2"></i>Create Group
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Rename Group Modal -->
+<div class="modal fade" id="renameGroupModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title">
+                    <i class="fas fa-edit me-2"></i>Rename Group
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="renameGroupForm">
+                    <input type="hidden" id="currentGroupName">
+                    <div class="mb-3">
+                        <label for="newGroupName" class="form-label">New Group Name</label>
+                        <input type="text" class="form-control" id="newGroupName" placeholder="Enter new name" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-info" onclick="renameGroup()">
+                    <i class="fas fa-save me-2"></i>Save Changes
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function showCreateGroupModal() {
+    document.getElementById('groupName').value = '';
+    const modal = new bootstrap.Modal(document.getElementById('createGroupModal'));
+    modal.show();
+}
+
+function createGroup() {
+    const groupName = document.getElementById('groupName').value.trim().toUpperCase();
+    
+    if (!groupName) {
+        alert('Please enter a group name');
+        return;
+    }
+    
+    fetch(`/tournament/{{ tournament.id }}/groups`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ group_name: groupName })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(data.message);
+            location.reload();
+        } else {
+            alert('Error: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error creating group. Please try again.');
+    });
+}
+
+function showRenameGroupModal(groupName) {
+    document.getElementById('currentGroupName').value = groupName;
+    document.getElementById('newGroupName').value = groupName;
+    const modal = new bootstrap.Modal(document.getElementById('renameGroupModal'));
+    modal.show();
+}
+
+function renameGroup() {
+    const currentName = document.getElementById('currentGroupName').value;
+    const newName = document.getElementById('newGroupName').value.trim().toUpperCase();
+    
+    if (!newName) {
+        alert('Please enter a new group name');
+        return;
+    }
+    
+    fetch(`/tournament/{{ tournament.id }}/groups/${currentName}/rename`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ new_name: newName })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(data.message);
+            location.reload();
+        } else {
+            alert('Error: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error renaming group. Please try again.');
+    });
+}
+
+function deleteGroup(groupName) {
+    if (!confirm(`Are you sure you want to delete Group ${groupName}? All teams will be unassigned.`)) {
+        return;
+    }
+    
+    fetch(`/tournament/{{ tournament.id }}/groups/${groupName}`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(data.message);
+            location.reload();
+        } else {
+            alert('Error: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error deleting group. Please try again.');
+    });
+}
+
+function assignTeamToGroup(teamId, groupName) {
+    fetch(`/team/${teamId}/assign-group`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ group_name: groupName })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Error: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error assigning team to group. Please try again.');
+    });
+}
+
+function removeTeamFromGroup(teamId) {
+    if (!confirm('Are you sure you want to remove this team from the group?')) {
+        return;
+    }
+    
+    fetch(`/team/${teamId}/assign-group`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ group_name: null })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Error: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error removing team from group. Please try again.');
+    });
+}
+</script>
+
+<style>
+.card {
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.dropdown-item:hover {
+    background-color: #e9ecef;
+}
+</style>
+{% endblock %}

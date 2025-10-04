@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %}Statistics{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>Statistics</h1>
+    
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <i class="fas fa-trophy fa-2x text-warning mb-2"></i>
+                    <h3>{{ total_tournaments }}</h3>
+                    <p class="card-text">Tournaments</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card text-center">
+                <div class="card-body">
+                    <i class="fas fa-user fa-2x text-info mb-2"></i>
+                    <h3>{{ total_players }}</h3>
+                    <p class="card-text">Players</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-star"></i> Top Scorers</h5>
+                </div>
+                <div class="card-body">
+                    {% if top_scorers %}
+                        <div class="list-group list-group-flush">
+                            {% for player in top_scorers %}
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>{{ player.full_name }}</strong>
+                                    <br>
+                                    <small class="text-muted">{{ player.team.name }}</small>
+                                </div>
+                                <span class="badge bg-primary rounded-pill">{{ player.goals_scored }} goals</span>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted text-center">No players with goals yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-clock"></i> Recent Matches</h5>
+                </div>
+                <div class="card-body">
+                    {% if recent_matches %}
+                        <div class="list-group list-group-flush">
+                            {% for match in recent_matches %}
+                            <div class="list-group-item">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>{{ match.home_team.name }} vs {{ match.away_team.name }}</strong>
+                                        <br>
+                                        <small class="text-muted">{{ match.tournament.name }}</small>
+                                    </div>
+                                    <span class="badge bg-success">{{ match.home_score }} - {{ match.away_score }}</span>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted text-center">No completed matches yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
