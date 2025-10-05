@@ -351,14 +351,4 @@ footer h5 {
     .row > .col-md-4 {
         margin-bottom: 1rem;
     }
-    
-    /* Make knockout bracket scrollable */
-    .bracket-container {
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-    }
-    
-    .bracket-grid {
-        min-width: 800px;
-    }
 }
