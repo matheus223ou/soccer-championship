@@ -303,3 +303,62 @@ footer h5 {
 ::-webkit-scrollbar-thumb:hover {
     background: #555;
 }
+
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
+    /* Make tables more readable on mobile */
+    .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        margin-bottom: 1rem;
+    }
+    
+    /* Reduce table font size on mobile */
+    .table {
+        font-size: 0.85rem;
+    }
+    
+    .table th,
+    .table td {
+        padding: 0.5rem 0.3rem;
+        white-space: nowrap;
+    }
+    
+    /* Make cards stack nicely */
+    .card {
+        margin-bottom: 1rem;
+    }
+    
+    /* Adjust button sizes */
+    .btn-sm {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+    }
+    
+    /* Make navigation more compact */
+    .navbar-brand {
+        font-size: 1.2rem;
+    }
+    
+    /* Reduce padding on containers */
+    .container {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+    
+    /* Stack form controls vertically */
+    .row > .col-md-6,
+    .row > .col-md-4 {
+        margin-bottom: 1rem;
+    }
+    
+    /* Make knockout bracket scrollable */
+    .bracket-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .bracket-grid {
+        min-width: 800px;
+    }
+}
