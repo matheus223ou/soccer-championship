@@ -124,6 +124,7 @@
                     </div>
                 </div>
                 <div class="card-body p-4">
+                    {% if is_admin %}
                     <!-- Add Team Section -->
                     <div class="row mb-4">
                         <div class="col-md-6">
@@ -183,6 +184,7 @@
                             </div>
                         </div>
                     </div>
+                    {% endif %}
                     
                     <!-- Teams in Group -->
                     {% set group_teams = group.teams %}
@@ -245,9 +247,11 @@
                                                 {% endif %}
                                             </td>
                                             <td class="text-center">
+                                                {% if is_admin %}
                                                 <button class="btn btn-outline-danger btn-sm" onclick="removeTeamFromGroup('{{ standing.team.id }}')" title="Remove from group">
                                                     <i class="fas fa-times"></i>
                                                 </button>
+                                                {% endif %}
                                             </td>
                                         </tr>
                                         {% endfor %}
@@ -266,6 +270,7 @@
                                     <i class="fas fa-gamepad me-2 text-success"></i>
                                     Group {{ group.name }} Matches
                                 </h5>
+                                {% if is_admin %}
                                 <div class="d-flex gap-2">
                                     <button class="btn btn-warning btn-sm" onclick="generateGroupMatches({{ group.id }}, '{{ group.name }}')">
                                         <i class="fas fa-magic me-1"></i> Generate All
@@ -274,6 +279,7 @@
                                         <i class="fas fa-plus me-1"></i> Schedule Match
                                     </button>
                                 </div>
+                                {% endif %}
                             </div>
                             <!-- Match Cards Layout -->
                             {% for match in group_matches %}
@@ -362,6 +368,7 @@
                                     <i class="fas fa-gamepad me-2 text-success"></i>
                                     Group {{ group.name }} Matches
                                 </h5>
+                                {% if is_admin %}
                                 <div class="d-flex gap-2">
                                     <button class="btn btn-warning btn-sm" onclick="generateGroupMatches({{ group.id }}, '{{ group.name }}')">
                                         <i class="fas fa-magic me-1"></i> Generate All
@@ -370,6 +377,7 @@
                                         <i class="fas fa-plus me-1"></i> Schedule Match
                                     </button>
                                 </div>
+                                {% endif %}
                             </div>
                             <div class="text-center py-3">
                                 <i class="fas fa-gamepad fa-2x text-muted mb-2"></i>
@@ -656,6 +664,7 @@
     <!-- Action Buttons -->
     <div class="mt-4 pt-3 border-top">
         <div class="d-flex gap-2">
+                {% if is_admin %}
                              <a href="{{ url_for('tournament.edit_tournament', tournament_id=tournament.id) }}" class="btn btn-outline-primary">
                      <i class="fas fa-edit"></i> Edit Tournament
                  </a>
@@ -665,6 +674,7 @@
                  <a href="{{ url_for('tournament.manage_qualification', tournament_id=tournament.id) }}" class="btn btn-warning">
                      <i class="fas fa-users"></i> Team Qualification
                  </a>
+                 {% endif %}
                  {% if tournament.get_qualified_teams()|length > 0 %}
                  <a href="{{ url_for('tournament.knockout_management', tournament_id=tournament.id) }}" class="btn btn-success">
                      <i class="fas fa-trophy"></i> Knockout Stage
