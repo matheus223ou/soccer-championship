@@ -709,11 +709,13 @@
         ← Voltar ao Torneio
     </a>
 
+    {% if is_admin %}
     <div class="edit-controls">
         <button class="edit-btn" id="editModeBtn" onclick="toggleEditMode();">
             ✏️ Editar Chaveamento
         </button>
     </div>
+    {% endif %}
 
     <div class="header">
         <div class="subtitle">CHAMPIONSHIP</div>
@@ -1079,6 +1081,13 @@
         }
 
         function editMatch(element) {
+            // Check if user is admin
+            const isAdmin = {{ 'true' if is_admin else 'false' }};
+            if (!isAdmin) {
+                alert('⚠️ Apenas administradores podem editar o chaveamento.');
+                return;
+            }
+            
             console.log('editMatch called with:', element);
             alert('Edit button clicked! Opening modal...');
             
