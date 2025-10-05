@@ -7,8 +7,15 @@ main_bp = Blueprint('main', __name__)
 @main_bp.route('/')
 def index():
     """Home page showing active tournaments and quick stats"""
-    active_tournaments = Tournament.query.filter_by(status='active').all()
-    upcoming_matches = Match.query.filter_by(status='scheduled').order_by(Match.date).limit(5).all()
+    try:
+        active_tournaments = Tournament.query.filter_by(status='active').all()
+        upcoming_matches = Match.query.filter_by(status='scheduled').order_by(Match.date).limit(5).all()
+    except Exception as e:
+        # If database tables don't exist, create them
+        print(f"Database error: {e}")
+        db.create_all()
+        active_tournaments = []
+        upcoming_matches = []
     
     return render_template('index.html', 
                          tournaments=active_tournaments,
