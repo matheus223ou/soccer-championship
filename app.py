@@ -4,8 +4,20 @@ import os
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your-secret-key-here'
-# Use SQLite for database
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///soccer_championship.db'
+
+# Use PostgreSQL from environment variable, fallback to SQLite locally
+database_url = os.environ.get('DATABASE_URL')
+if database_url:
+    # Use PostgreSQL (Supabase)
+    if database_url.startswith('postgres://'):
+        database_url = database_url.replace('postgres://', 'postgresql://', 1)
+    app.config['SQLALCHEMY_DATABASE_URI'] = database_url
+    print(f"Using PostgreSQL database")
+else:
+    # Use SQLite locally
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///soccer_championship.db'
+    print(f"Using SQLite database (local development)")
+    
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Import and initialize models
@@ -26,8 +38,9 @@ app.register_blueprint(tournament_bp)
 app.register_blueprint(team_bp)
 app.register_blueprint(match_bp)
 
-# Create database tables (this runs when app starts, even with gunicorn)
-with app.app_context():
+# Create database tables before first request
+@app.before_first_request
+def create_tables():
     db.create_all()
     print("Database tables created successfully!")
 

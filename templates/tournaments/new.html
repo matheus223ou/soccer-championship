@@ -67,18 +67,18 @@
 </div>
 
 <script>
-// Set minimum end date to start date
+// Auto-fill end date with start date when start date is selected
 document.getElementById('start_date').addEventListener('change', function() {
-    document.getElementById('end_date').min = this.value;
-});
-
-// Validate end date is after start date
-document.getElementById('end_date').addEventListener('change', function() {
-    const startDate = document.getElementById('start_date').value;
-    if (startDate && this.value <= startDate) {
-        alert('End date must be after start date');
-        this.value = '';
+    const startDate = this.value;
+    const endDateField = document.getElementById('end_date');
+    
+    // Auto-fill end date with start date if empty
+    if (!endDateField.value) {
+        endDateField.value = startDate;
     }
+    
+    // Set min attribute to allow same day or later
+    endDateField.setAttribute('min', startDate);
 });
 </script>
 {% endblock %}
