@@ -80,6 +80,11 @@
                 <i class="fas fa-list-ol me-2"></i>Standings
             </button>
         </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link" href="{{ url_for('tournament.knockout_management', tournament_id=tournament.id) }}">
+                <i class="fas fa-trophy me-2"></i>Knockout
+            </a>
+        </li>
     </ul>
 
     <!-- Tab Content -->
@@ -91,6 +96,7 @@
                     <i class="fas fa-layer-group me-2 text-primary"></i>
                     Group Stages
                 </h3>
+                {% if is_admin %}
                 <div class="d-flex gap-2">
                     <button class="btn btn-success btn-lg" onclick="generateAllGroupMatches()">
                         <i class="fas fa-magic me-2"></i> Generate All Matches
@@ -99,6 +105,7 @@
                         <i class="fas fa-plus me-2"></i> Add New Team
                     </a>
                 </div>
+                {% endif %}
             </div>
             
             {% for group in tournament.groups %}
@@ -331,6 +338,7 @@
                                                 <span class="badge bg-secondary">Agendado</span>
                                             {% endif %}
                                         </div>
+                                        {% if is_admin %}
                                         <div class="btn-group btn-group-sm" role="group">
                                             {% if match.status == 'scheduled' %}
                                                 <button class="btn btn-outline-primary" onclick="showUpdateScoreModal('{{ match.id }}', '{{ match.home_team.name if match.home_team else 'TBD' }}', '{{ match.away_team.name if match.away_team else 'TBD' }}')" title="Editar">
@@ -341,6 +349,7 @@
                                                 <i class="fas fa-trash"></i>
                                             </button>
                                         </div>
+                                        {% endif %}
                                     </div>
                                 </div>
                             </div>

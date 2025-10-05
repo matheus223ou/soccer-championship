@@ -1,9 +1,12 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, session
 from datetime import datetime
 import os
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your-secret-key-here'
+
+# Admin password (you can change this)
+ADMIN_PASSWORD = 'admin123'
 
 # Use PostgreSQL from environment variable, fallback to SQLite locally
 database_url = os.environ.get('DATABASE_URL')
@@ -42,6 +45,29 @@ app.register_blueprint(match_bp)
 with app.app_context():
     db.create_all()
     print("Database tables created successfully!")
+
+@app.route('/admin/login', methods=['GET', 'POST'])
+def admin_login():
+    if request.method == 'POST':
+        password = request.form.get('password')
+        if password == ADMIN_PASSWORD:
+            session['is_admin'] = True
+            flash('Welcome, Admin!', 'success')
+            return redirect(url_for('main.index'))
+        else:
+            flash('Invalid password', 'danger')
+    return render_template('admin_login.html')
+
+@app.route('/admin/logout')
+def admin_logout():
+    session.pop('is_admin', None)
+    flash('Logged out successfully', 'info')
+    return redirect(url_for('main.index'))
+
+# Make is_admin available in all templates
+@app.context_processor
+def inject_admin_status():
+    return {'is_admin': session.get('is_admin', False)}
 
 @app.errorhandler(404)
 def not_found_error(error):
