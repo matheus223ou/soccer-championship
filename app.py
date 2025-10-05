@@ -38,9 +38,8 @@ app.register_blueprint(tournament_bp)
 app.register_blueprint(team_bp)
 app.register_blueprint(match_bp)
 
-# Create database tables before first request
-@app.before_first_request
-def create_tables():
+# Create database tables on startup
+with app.app_context():
     db.create_all()
     print("Database tables created successfully!")
 
