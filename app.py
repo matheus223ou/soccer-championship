@@ -26,7 +26,10 @@ app.register_blueprint(tournament_bp)
 app.register_blueprint(team_bp)
 app.register_blueprint(match_bp)
 
-
+# Create database tables (this runs when app starts, even with gunicorn)
+with app.app_context():
+    db.create_all()
+    print("Database tables created successfully!")
 
 @app.errorhandler(404)
 def not_found_error(error):
