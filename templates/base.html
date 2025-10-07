@@ -20,7 +20,7 @@
         <div class="container">
             <a class="navbar-brand" href="{{ url_for('main.index') }}">
                 <i class="fas fa-futbol me-2"></i>
-                Amateur Championship
+                Gerenciador de Campeonatos
             </a>
             
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -31,29 +31,31 @@
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('main.index') }}">
-                            <i class="fas fa-home me-1"></i>Home
+                            <i class="fas fa-home me-1"></i>Início
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('main.tournaments') }}">
-                            <i class="fas fa-trophy me-1"></i>Tournaments
+                            <i class="fas fa-trophy me-1"></i>Campeonatos
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('main.knockout') }}">
-                            <i class="fas fa-sitemap me-1"></i>Knockout
+                            <i class="fas fa-sitemap me-1"></i>Mata-Mata
                         </a>
                     </li>
+                    {% if is_admin %}
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('main.statistics') }}">
-                            <i class="fas fa-chart-bar me-1"></i>Statistics
+                            <i class="fas fa-chart-bar me-1"></i>Estatísticas
                         </a>
                     </li>
+                    {% endif %}
                 </ul>
                 
                 <!-- Search Form -->
                 <form class="d-flex me-3" action="{{ url_for('main.search') }}" method="GET">
-                    <input class="form-control me-2" type="search" name="q" placeholder="Search..." aria-label="Search">
+                    <input class="form-control me-2" type="search" name="q" placeholder="Buscar..." aria-label="Search">
                     <button class="btn btn-outline-light" type="submit">
                         <i class="fas fa-search"></i>
                     </button>
@@ -68,17 +70,17 @@
                         </a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="{{ url_for('tournament.new_tournament') }}">
-                                <i class="fas fa-plus me-2"></i>New Tournament
+                                <i class="fas fa-plus me-2"></i>Novo Campeonato
                             </a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="{{ url_for('admin_logout') }}">
-                                <i class="fas fa-sign-out-alt me-2"></i>Logout
+                                <i class="fas fa-sign-out-alt me-2"></i>Sair
                             </a></li>
                         </ul>
                     </div>
                     {% else %}
                     <a class="nav-link" href="{{ url_for('admin_login') }}">
-                        <i class="fas fa-lock me-1"></i>Admin Login
+                        <i class="fas fa-lock me-1"></i>Login Admin
                     </a>
                     {% endif %}
                 </div>

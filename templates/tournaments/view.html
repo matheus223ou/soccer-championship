@@ -28,61 +28,33 @@
         </div>
     </div>
 
-    <!-- Tournament Info -->
-    <div class="row mb-4">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Tournament Information</h5>
-                    <ul class="list-unstyled">
-                        <li><i class="fas fa-calendar me-2"></i><strong>Start Date:</strong> {{ tournament.start_date.strftime('%B %d, %Y') }}</li>
-                        <li><i class="fas fa-calendar me-2"></i><strong>End Date:</strong> {{ tournament.end_date.strftime('%B %d, %Y') }}</li>
-                        <li><i class="fas fa-users me-2"></i><strong>Max Teams:</strong> {{ tournament.max_teams }}</li>
-                        <li><i class="fas fa-trophy me-2"></i><strong>Current Stage:</strong> {{ tournament.current_stage|replace('_', ' ')|title }}</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Quick Stats</h5>
-                    <ul class="list-unstyled">
-                        <li><i class="fas fa-users me-2"></i><strong>Teams:</strong> {{ tournament.teams|length }}</li>
-                        <li><i class="fas fa-gamepad me-2"></i><strong>Matches:</strong> {{ tournament.matches|length }}</li>
-                        <li><i class="fas fa-calendar-check me-2"></i><strong>Completed:</strong> {{ tournament.matches|selectattr('status', 'equalto', 'completed')|list|length }}</li>
-                        <li><i class="fas fa-clock me-2"></i><strong>Scheduled:</strong> {{ tournament.matches|selectattr('status', 'equalto', 'scheduled')|list|length }}</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- Navigation Tabs -->
     <ul class="nav nav-tabs mb-4" id="tournamentTabs" role="tablist">
         <li class="nav-item" role="presentation">
             <button class="nav-link active" id="groups-tab" data-bs-toggle="tab" data-bs-target="#groups" type="button" role="tab">
-                <i class="fas fa-layer-group me-2"></i>Groups
+                <i class="fas fa-layer-group me-2"></i>Grupos
             </button>
         </li>
+        {% if is_admin %}
         <li class="nav-item" role="presentation">
             <button class="nav-link" id="teams-tab" data-bs-toggle="tab" data-bs-target="#teams" type="button" role="tab">
-                <i class="fas fa-users me-2"></i>All Teams ({{ tournament.teams|length }})
+                <i class="fas fa-users me-2"></i>Todos os Times ({{ tournament.teams|length }})
             </button>
         </li>
         <li class="nav-item" role="presentation">
             <button class="nav-link" id="matches-tab" data-bs-toggle="tab" data-bs-target="#matches" type="button" role="tab">
-                <i class="fas fa-gamepad me-2"></i>Matches ({{ tournament.matches|length }})
+                <i class="fas fa-gamepad me-2"></i>Partidas ({{ tournament.matches|length }})
             </button>
         </li>
+        {% endif %}
         <li class="nav-item" role="presentation">
             <button class="nav-link" id="standings-tab" data-bs-toggle="tab" data-bs-target="#standings" type="button" role="tab">
-                <i class="fas fa-list-ol me-2"></i>Standings
+                <i class="fas fa-list-ol me-2"></i>Classificação
             </button>
         </li>
         <li class="nav-item" role="presentation">
             <a class="nav-link" href="{{ url_for('tournament.knockout_management', tournament_id=tournament.id) }}">
-                <i class="fas fa-trophy me-2"></i>Knockout
+                <i class="fas fa-trophy me-2"></i>Mata-Mata
             </a>
         </li>
     </ul>
@@ -268,7 +240,7 @@
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <button class="btn btn-outline-success w-100" type="button" data-bs-toggle="collapse" data-bs-target="#matches{{ group.name }}" aria-expanded="false">
                                     <i class="fas fa-gamepad me-2"></i>
-                                    <strong>Show Matches ({{ group_matches|length }})</strong>
+                                    <strong>Ver Partidas ({{ group_matches|length }})</strong>
                                     <i class="fas fa-chevron-down ms-2"></i>
                                 </button>
                             </div>
@@ -376,7 +348,7 @@
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <button class="btn btn-outline-secondary w-100" type="button" data-bs-toggle="collapse" data-bs-target="#matches{{ group.name }}" aria-expanded="false">
                                     <i class="fas fa-gamepad me-2"></i>
-                                    <strong>Show Matches (0)</strong>
+                                    <strong>Ver Partidas (0)</strong>
                                     <i class="fas fa-chevron-down ms-2"></i>
                                 </button>
                             </div>
