@@ -266,18 +266,25 @@
                             <div class="card mb-3">
                                 <div class="card-body">
                                     <!-- Time and Field at top -->
-                                    <div class="d-flex justify-content-between align-items-center mb-3">
-                                        <div>
-                                            <span class="badge bg-primary fs-6 px-3 py-2">
-                                                <i class="fas fa-clock me-1"></i>
-                                                {{ match.date.strftime('%H:%M') if match.date else 'TBD' }}
-                                            </span>
-                                            <small class="text-muted ms-2">{{ match.date.strftime('%d/%m/%Y') if match.date else '' }}</small>
+                                    <div class="row mb-3 text-center">
+                                        <div class="col-6">
+                                            <div class="d-flex flex-column align-items-center">
+                                                <small class="text-muted mb-1">Horário</small>
+                                                <span class="badge bg-primary fs-6 px-3 py-2">
+                                                    <i class="fas fa-clock me-1"></i>
+                                                    {{ match.date.strftime('%H:%M') if match.date else 'TBD' }}
+                                                </span>
+                                            </div>
                                         </div>
-                                        <span class="badge bg-info fs-6 px-3 py-2">
-                                            <i class="fas fa-map-marker-alt me-1"></i>
-                                            Campo {{ match.field if match.field else 'TBD' }}
-                                        </span>
+                                        <div class="col-6">
+                                            <div class="d-flex flex-column align-items-center">
+                                                <small class="text-muted mb-1">Local</small>
+                                                <span class="badge bg-info fs-6 px-3 py-2">
+                                                    <i class="fas fa-map-marker-alt me-1"></i>
+                                                    Campo {{ match.field if match.field else 'TBD' }}
+                                                </span>
+                                            </div>
+                                        </div>
                                     </div>
                                     
                                     <!-- Teams and Score in center -->
