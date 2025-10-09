@@ -1,10 +1,22 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
+from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify, session
+from functools import wraps
 from models import Team, Player, Match, Tournament, Group, db
 from datetime import datetime
 
 team_bp = Blueprint('team', __name__)
 
+# Admin required decorator
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not session.get('is_admin'):
+            flash('Acesso negado. Apenas administradores podem realizar esta ação.', 'danger')
+            return redirect(url_for('main.index'))
+        return f(*args, **kwargs)
+    return decorated_function
+
 @team_bp.route('/team/new', methods=['GET', 'POST'])
+@admin_required
 def new_team():
     """Create a new team"""
     if request.method == 'POST':
@@ -64,6 +76,7 @@ def edit_team(team_id):
     return render_template('teams/edit.html', team=team)
 
 @team_bp.route('/team/<int:team_id>/delete', methods=['POST'])
+@admin_required
 def delete_team(team_id):
     """Delete team"""
     team = Team.query.get_or_404(team_id)
@@ -132,6 +145,7 @@ def team_matches(team_id):
     return render_template('teams/matches.html', team=team, matches=matches)
 
 @team_bp.route('/team/<int:team_id>/assign-group', methods=['POST'])
+@admin_required
 def assign_team_to_group(team_id):
     """Assign team to a group or remove from group"""
     team = Team.query.get_or_404(team_id)

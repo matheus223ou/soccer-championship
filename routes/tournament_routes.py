@@ -1,10 +1,22 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
+from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify, session
+from functools import wraps
 from models import Tournament, Team, Match, Group, db
 from datetime import datetime
 
 tournament_bp = Blueprint('tournament', __name__)
 
+# Admin required decorator
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not session.get('is_admin'):
+            flash('Acesso negado. Apenas administradores podem realizar esta ação.', 'danger')
+            return redirect(url_for('main.index'))
+        return f(*args, **kwargs)
+    return decorated_function
+
 @tournament_bp.route('/tournament/new', methods=['GET', 'POST'])
+@admin_required
 def new_tournament():
     """Create a new tournament"""
     if request.method == 'POST':
@@ -52,6 +64,7 @@ def view_tournament(tournament_id):
     return render_template('tournaments/view.html', tournament=tournament, standings=standings)
 
 @tournament_bp.route('/tournament/<int:tournament_id>/edit', methods=['GET', 'POST'])
+@admin_required
 def edit_tournament(tournament_id):
     """Edit tournament"""
     tournament = Tournament.query.get_or_404(tournament_id)
@@ -72,6 +85,7 @@ def edit_tournament(tournament_id):
     return render_template('tournaments/edit.html', tournament=tournament)
 
 @tournament_bp.route('/tournament/<int:tournament_id>/delete', methods=['POST'])
+@admin_required
 def delete_tournament(tournament_id):
     """Delete tournament"""
     tournament = Tournament.query.get_or_404(tournament_id)
@@ -111,6 +125,7 @@ def knockout_management(tournament_id):
                          bracket=bracket)
 
 @tournament_bp.route('/tournament/<int:tournament_id>/create-knockout-match', methods=['POST'])
+@admin_required
 def create_knockout_match(tournament_id):
     """Create a new knockout match"""
     tournament = Tournament.query.get_or_404(tournament_id)
@@ -135,6 +150,7 @@ def create_knockout_match(tournament_id):
         return jsonify({'success': False, 'message': str(e)})
 
 @tournament_bp.route('/tournament/<int:tournament_id>/advance-knockout', methods=['POST'])
+@admin_required
 def advance_knockout_stage(tournament_id):
     """Advance teams to next knockout stage"""
     tournament = Tournament.query.get_or_404(tournament_id)
@@ -196,6 +212,7 @@ def manage_groups(tournament_id):
                          teams_by_group=teams_by_group)
 
 @tournament_bp.route('/tournament/<int:tournament_id>/groups', methods=['POST'])
+@admin_required
 def create_group(tournament_id):
     """Create a new group"""
     tournament = Tournament.query.get_or_404(tournament_id)
@@ -289,6 +306,7 @@ def rename_group(tournament_id, group_name):
     return jsonify({'success': True, 'message': f'Group {group_name} renamed to {new_name}'})
 
 @tournament_bp.route('/tournament/<int:tournament_id>/generate-matches', methods=['POST'])
+@admin_required
 def generate_matches(tournament_id):
     """Generate group stage matches"""
     tournament = Tournament.query.get_or_404(tournament_id)
@@ -316,6 +334,7 @@ def generate_matches(tournament_id):
     return redirect(url_for('tournament.view_tournament', tournament_id=tournament.id))
 
 @tournament_bp.route('/tournament/<int:tournament_id>/qualification', methods=['GET', 'POST'])
+@admin_required
 def manage_qualification(tournament_id):
     """Manage team qualification for knockout stage"""
     tournament = Tournament.query.get_or_404(tournament_id)
@@ -362,6 +381,7 @@ def manage_qualification(tournament_id):
                          group_standings=group_standings)
 
 @tournament_bp.route('/tournament/<int:tournament_id>/knockout/save-match', methods=['POST'])
+@admin_required
 def save_knockout_match(tournament_id):
     """Save a knockout match"""
     tournament = Tournament.query.get_or_404(tournament_id)
@@ -459,6 +479,7 @@ def advance_winner_to_next_round(tournament_id, winner_team_id, current_stage, c
         return next_match
 
 @tournament_bp.route('/tournament/<int:tournament_id>/knockout/update-score', methods=['POST'])
+@admin_required
 def update_knockout_score(tournament_id):
     """Update knockout match score and advance winner"""
     tournament = Tournament.query.get_or_404(tournament_id)
@@ -516,6 +537,7 @@ def update_knockout_score(tournament_id):
     })
 
 @tournament_bp.route('/tournament/<int:tournament_id>/knockout/delete-match', methods=['POST'])
+@admin_required
 def delete_knockout_match(tournament_id):
     """Delete a knockout match"""
     tournament = Tournament.query.get_or_404(tournament_id)
@@ -538,6 +560,7 @@ def delete_knockout_match(tournament_id):
     })
 
 @tournament_bp.route('/tournament/<int:tournament_id>/knockout/clear-all', methods=['POST'])
+@admin_required
 def clear_all_knockout_matches(tournament_id):
     """Clear all knockout matches"""
     tournament = Tournament.query.get_or_404(tournament_id)

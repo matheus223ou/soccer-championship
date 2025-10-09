@@ -1,11 +1,23 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
+from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify, session
+from functools import wraps
 from models import Match, Team, Tournament, Group, db
 from datetime import datetime, timedelta
 import itertools
 
 match_bp = Blueprint('match', __name__)
 
+# Admin required decorator
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not session.get('is_admin'):
+            flash('Acesso negado. Apenas administradores podem realizar esta ação.', 'danger')
+            return redirect(url_for('main.index'))
+        return f(*args, **kwargs)
+    return decorated_function
+
 @match_bp.route('/match/new', methods=['GET', 'POST'])
+@admin_required
 def new_match():
     """Create a new match"""
     if request.method == 'POST':
@@ -91,6 +103,7 @@ def edit_match(match_id):
     return render_template('matches/edit.html', match=match)
 
 @match_bp.route('/match/<int:match_id>/delete', methods=['POST'])
+@admin_required
 def delete_match(match_id):
     """Delete match"""
     match = Match.query.get_or_404(match_id)
@@ -107,6 +120,7 @@ def delete_match(match_id):
     return redirect(url_for('main.tournaments'))
 
 @match_bp.route('/match/<int:match_id>/update-score', methods=['POST'])
+@admin_required
 def update_score(match_id):
     """Update match score"""
     match = Match.query.get_or_404(match_id)
@@ -175,6 +189,7 @@ def live_matches():
     return render_template('matches/live.html', matches=live_matches)
 
 @match_bp.route('/tournament/<int:tournament_id>/generate-group-matches', methods=['POST'])
+@admin_required
 def generate_group_matches(tournament_id):
     """Generate all matches for a specific group automatically"""
     tournament = Tournament.query.get_or_404(tournament_id)
@@ -251,6 +266,7 @@ def generate_group_matches(tournament_id):
     return redirect(url_for('tournament.view_tournament', tournament_id=tournament_id))
 
 @match_bp.route('/tournament/<int:tournament_id>/generate-all-group-matches', methods=['POST'])
+@admin_required
 def generate_all_group_matches(tournament_id):
     """Generate all matches for all groups in the tournament"""
     tournament = Tournament.query.get_or_404(tournament_id)
