@@ -137,7 +137,7 @@
                                     <div class="col-4">
                                         <div class="stat-item">
                                             <div class="stat-number text-success fw-bold fs-4">
-                                                {% set group_matches = tournament.matches|selectattr('group_name', 'equalto', group.name)|list %}
+                                                {% set group_matches = tournament.matches|selectattr('group_name', 'equalto', group.name)|sort(attribute='date')|list %}
                                                 {{ group_matches|length }}
                                             </div>
                                             <div class="stat-label text-muted small">Matches</div>
@@ -234,7 +234,7 @@
                          
                          
                          <!-- Group Matches -->
-                         {% set group_matches = tournament.matches|selectattr('group_name', 'equalto', group.name)|list %}
+                         {% set group_matches = tournament.matches|selectattr('group_name', 'equalto', group.name)|sort(attribute='date')|list %}
                         {% if group_matches %}
                         <div class="matches-section mt-4">
                             <div class="d-flex justify-content-between align-items-center mb-3">
@@ -1120,16 +1120,24 @@ function updateMatchScore() {
     const form = document.getElementById('updateScoreForm');
     const formData = new FormData(form);
     
+    const homeScoreValue = formData.get('home_score');
+    const awayScoreValue = formData.get('away_score');
+    
     const scoreData = {
         match_id: formData.get('match_id'),
-        home_score: parseInt(formData.get('home_score')),
-        away_score: parseInt(formData.get('away_score')),
+        home_score: homeScoreValue ? parseInt(homeScoreValue) : null,
+        away_score: awayScoreValue ? parseInt(awayScoreValue) : null,
         match_datetime: formData.get('match_datetime'),
         field_number: formData.get('field_number')
     };
     
-    if (scoreData.home_score < 0 || scoreData.away_score < 0) {
-        alert('Scores cannot be negative');
+    // Only validate scores if they are provided
+    if (scoreData.home_score !== null && scoreData.home_score < 0) {
+        alert('Placar não pode ser negativo');
+        return;
+    }
+    if (scoreData.away_score !== null && scoreData.away_score < 0) {
+        alert('Placar não pode ser negativo');
         return;
     }
     

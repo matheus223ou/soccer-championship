@@ -128,19 +128,25 @@ def update_score(match_id):
     # Handle both form data and JSON requests
     if request.is_json:
         data = request.get_json()
-        home_score = int(data['home_score'])
-        away_score = int(data['away_score'])
+        home_score = data.get('home_score')
+        away_score = data.get('away_score')
         match_datetime = data.get('match_datetime')
         field_number = data.get('field_number')
     else:
-        home_score = int(request.form['home_score'])
-        away_score = int(request.form['away_score'])
+        home_score = request.form.get('home_score')
+        away_score = request.form.get('away_score')
         match_datetime = request.form.get('match_datetime')
         field_number = request.form.get('field_number')
     
-    match.home_score = home_score
-    match.away_score = away_score
-    match.status = 'completed'
+    # Only update scores if provided
+    if home_score is not None and home_score != '':
+        match.home_score = int(home_score)
+    if away_score is not None and away_score != '':
+        match.away_score = int(away_score)
+    
+    # Only mark as completed if both scores are provided
+    if home_score is not None and away_score is not None and home_score != '' and away_score != '':
+        match.status = 'completed'
     
     # Update datetime if provided
     if match_datetime:
