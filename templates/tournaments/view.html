@@ -200,15 +200,12 @@
                                                 <div class="d-flex align-items-center">
                                                     {% if standing.team.logo_url %}
                                                         <img src="{{ standing.team.logo_url }}" 
-                                                             alt="{{ standing.team.name }} Logo" 
-                                                             class="img-fluid rounded me-2" 
+                                                             alt="" 
+                                                             class="img-fluid rounded-circle me-2" 
                                                              style="width: 35px; height: 35px; object-fit: cover;"
-                                                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                                                        <div class="rounded me-2 d-flex align-items-center justify-content-center" style="width: 35px; height: 35px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; font-weight: bold; font-size: 14px; display: none;">
-                                                            {{ standing.team.name[:2].upper() }}
-                                                        </div>
+                                                             onerror="this.onerror=null; this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22><rect width=%22100%22 height=%22100%22 fill=%22%23667eea%22/><text x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-size=%2240%22 fill=%22white%22 font-weight=%22bold%22>{{ standing.team.name[:2].upper() }}</text></svg>';">
                                                     {% else %}
-                                                        <div class="rounded me-2 d-flex align-items-center justify-content-center" style="width: 35px; height: 35px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; font-weight: bold; font-size: 14px;">
+                                                        <div class="rounded-circle me-2 d-flex align-items-center justify-content-center" style="width: 35px; height: 35px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; font-weight: bold; font-size: 14px;">
                                                             {{ standing.team.name[:2].upper() }}
                                                         </div>
                                                     {% endif %}
@@ -308,13 +305,10 @@
                                             <div class="d-flex flex-column align-items-center">
                                                 {% if match.home_team and match.home_team.logo_url %}
                                                     <img src="{{ match.home_team.logo_url }}" 
-                                                         alt="Logo" 
-                                                         class="mb-2 rounded" 
+                                                         alt="" 
+                                                         class="mb-2 rounded-circle" 
                                                          style="width: 50px; height: 50px; object-fit: cover;"
-                                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                                                    <div class="team-logo-placeholder mb-2" style="width: 50px; height: 50px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 50%; display: none; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 18px;">
-                                                        {{ match.home_team.name[:2].upper() if match.home_team else 'T' }}
-                                                    </div>
+                                                         onerror="this.onerror=null; this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22><circle cx=%2250%22 cy=%2250%22 r=%2250%22 fill=%22%23667eea%22/><text x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-size=%2235%22 fill=%22white%22 font-weight=%22bold%22>{{ match.home_team.name[:2].upper() if match.home_team else 'T' }}</text></svg>';">
                                                 {% else %}
                                                     <div class="team-logo-placeholder mb-2" style="width: 50px; height: 50px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 18px;">
                                                         {{ match.home_team.name[:2].upper() if match.home_team else 'T' }}
@@ -333,13 +327,10 @@
                                             <div class="d-flex flex-column align-items-center">
                                                 {% if match.away_team and match.away_team.logo_url %}
                                                     <img src="{{ match.away_team.logo_url }}" 
-                                                         alt="Logo" 
-                                                         class="mb-2 rounded" 
+                                                         alt="" 
+                                                         class="mb-2 rounded-circle" 
                                                          style="width: 50px; height: 50px; object-fit: cover;"
-                                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                                                    <div class="team-logo-placeholder mb-2" style="width: 50px; height: 50px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border-radius: 50%; display: none; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 18px;">
-                                                        {{ match.away_team.name[:2].upper() if match.away_team else 'T' }}
-                                                    </div>
+                                                         onerror="this.onerror=null; this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22><circle cx=%2250%22 cy=%2250%22 r=%2250%22 fill=%22%23f093fb%22/><text x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-size=%2235%22 fill=%22white%22 font-weight=%22bold%22>{{ match.away_team.name[:2].upper() if match.away_team else 'T' }}</text></svg>';">
                                                 {% else %}
                                                     <div class="team-logo-placeholder mb-2" style="width: 50px; height: 50px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 18px;">
                                                         {{ match.away_team.name[:2].upper() if match.away_team else 'T' }}
