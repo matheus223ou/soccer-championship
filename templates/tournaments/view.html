@@ -17,14 +17,16 @@
                 </span>
                 <span class="badge bg-info fs-6">{{ tournament.tournament_type|replace('_', ' ')|title }}</span>
             </div>
+            {% if is_admin %}
             <div class="d-flex gap-2 justify-content-end">
                 <a href="{{ url_for('tournament.edit_tournament', tournament_id=tournament.id) }}" class="btn btn-warning btn-sm">
-                    <i class="fas fa-edit me-1"></i>Edit
+                    <i class="fas fa-edit me-1"></i>Editar
                 </a>
                 <button class="btn btn-danger btn-sm" onclick="confirmDelete()">
-                    <i class="fas fa-trash me-1"></i>Delete
+                    <i class="fas fa-trash me-1"></i>Excluir
                 </button>
             </div>
+            {% endif %}
         </div>
     </div>
 
@@ -137,7 +139,7 @@
                                     <div class="col-4">
                                         <div class="stat-item">
                                             <div class="stat-number text-success fw-bold fs-4">
-                                                {% set group_matches = tournament.matches|selectattr('group_name', 'equalto', group.name)|sort(attribute='date')|list %}
+                                                {% set group_matches = ordered_matches|selectattr('group_name', 'equalto', group.name)|list %}
                                                 {{ group_matches|length }}
                                             </div>
                                             <div class="stat-label text-muted small">Matches</div>
@@ -146,7 +148,7 @@
                                     <div class="col-4">
                                         <div class="stat-item">
                                             <div class="stat-number text-warning fw-bold fs-4">
-                                                {% set completed_matches = tournament.matches|selectattr('group_name', 'equalto', group.name)|selectattr('status', 'equalto', 'completed')|list %}
+                                                {% set completed_matches = ordered_matches|selectattr('group_name', 'equalto', group.name)|selectattr('status', 'equalto', 'completed')|list %}
                                                 {{ completed_matches|length }}
                                             </div>
                                             <div class="stat-label text-muted small">Completed</div>
@@ -234,7 +236,7 @@
                          
                          
                          <!-- Group Matches -->
-                         {% set group_matches = tournament.matches|selectattr('group_name', 'equalto', group.name)|sort(attribute='date')|list %}
+                         {% set group_matches = ordered_matches|selectattr('group_name', 'equalto', group.name)|list %}
                         {% if group_matches %}
                         <div class="matches-section mt-4">
                             <div class="d-flex justify-content-between align-items-center mb-3">
@@ -272,7 +274,7 @@
                                                 <small class="text-muted mb-1">Horário</small>
                                                 <span class="badge bg-primary fs-6 px-3 py-2">
                                                     <i class="fas fa-clock me-1"></i>
-                                                    {{ match.date.strftime('%H:%M') if match.date else 'TBD' }}
+                                                    {{ match.get_local_time().strftime('%H:%M') if match.date else 'TBD' }}
                                                 </span>
                                             </div>
                                         </div>
@@ -783,12 +785,12 @@
                         
                         <div class="row mb-3">
                             <div class="col-6">
-                                <label for="matchDateTime" class="form-label">Data e Horário</label>
-                                <input type="datetime-local" class="form-control" id="matchDateTime" name="match_datetime">
+                                <label for="matchTime" class="form-label">Horário</label>
+                                <input type="time" class="form-control" id="matchTime" name="match_time" placeholder="14:00">
                             </div>
                             <div class="col-6">
-                                <label for="fieldNumber" class="form-label">Número do Campo</label>
-                                <input type="text" class="form-control" id="fieldNumber" name="field_number" placeholder="Ex: Campo 1, Campo 2...">
+                                <label for="fieldNumber" class="form-label">Campo</label>
+                                <input type="text" class="form-control" id="fieldNumber" name="field_number" placeholder="1">
                             </div>
                         </div>
                         <div class="alert alert-warning">
@@ -1101,11 +1103,14 @@ function showUpdateScoreModal(matchId, homeTeamName, awayTeamName) {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                // Populate datetime field
+                // Populate time field only
                 if (data.match.date) {
                     const date = new Date(data.match.date);
-                    const isoString = date.toISOString().slice(0, 16); // Format for datetime-local
-                    document.getElementById('matchDateTime').value = isoString;
+                    // Format time as HH:MM (pad with zeros)
+                    const hours = String(date.getHours()).padStart(2, '0');
+                    const minutes = String(date.getMinutes()).padStart(2, '0');
+                    const timeString = `${hours}:${minutes}`;
+                    document.getElementById('matchTime').value = timeString;
                 }
                 
                 // Populate field number
@@ -1130,11 +1135,14 @@ function updateMatchScore() {
     const homeScoreValue = formData.get('home_score');
     const awayScoreValue = formData.get('away_score');
     
+    // Get match time only (keep existing date)
+    const matchTime = formData.get('match_time');
+    
     const scoreData = {
         match_id: formData.get('match_id'),
         home_score: homeScoreValue ? parseInt(homeScoreValue) : null,
         away_score: awayScoreValue ? parseInt(awayScoreValue) : null,
-        match_datetime: formData.get('match_datetime'),
+        match_time: matchTime,  // Only send time, backend will update
         field_number: formData.get('field_number')
     };
     
@@ -1158,15 +1166,16 @@ function updateMatchScore() {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            alert('Score updated successfully!');
-            location.reload();
+            alert('Partida atualizada com sucesso!');
+            // Força reload completo para reordenar
+            window.location.reload(true);
         } else {
-            alert('Error: ' + data.message);
+            alert('Erro: ' + data.message);
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('Error updating score. Please try again.');
+        alert('Erro ao atualizar. Tente novamente.');
     });
 }
 

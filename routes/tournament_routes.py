@@ -59,17 +59,21 @@ def new_tournament():
 @tournament_bp.route('/tournament/<int:tournament_id>')
 def view_tournament(tournament_id):
     """View tournament details"""
+    from models import Match
+    from sqlalchemy import func
     tournament = Tournament.query.get_or_404(tournament_id)
     
-    # Sort matches by date (earliest first, None dates go to end)
-    sorted_matches = sorted(
-        tournament.matches,
-        key=lambda m: m.date if m.date else datetime.max
-    )
-    tournament.matches = sorted_matches
+    # Get matches ordered by date+time (datetime field contains both)
+    # Using COALESCE to put NULL dates at the end
+    ordered_matches = Match.query.filter_by(tournament_id=tournament_id)\
+        .order_by(func.coalesce(Match.date, datetime.max).asc())\
+        .all()
     
     standings = tournament.get_standings()
-    return render_template('tournaments/view.html', tournament=tournament, standings=standings)
+    return render_template('tournaments/view.html', 
+                         tournament=tournament, 
+                         standings=standings,
+                         ordered_matches=ordered_matches)
 
 @tournament_bp.route('/tournament/<int:tournament_id>/edit', methods=['GET', 'POST'])
 @admin_required
