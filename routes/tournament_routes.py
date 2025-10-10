@@ -60,6 +60,14 @@ def new_tournament():
 def view_tournament(tournament_id):
     """View tournament details"""
     tournament = Tournament.query.get_or_404(tournament_id)
+    
+    # Sort matches by date (earliest first, None dates go to end)
+    sorted_matches = sorted(
+        tournament.matches,
+        key=lambda m: m.date if m.date else datetime.max
+    )
+    tournament.matches = sorted_matches
+    
     standings = tournament.get_standings()
     return render_template('tournaments/view.html', tournament=tournament, standings=standings)
 

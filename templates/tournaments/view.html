@@ -1081,6 +1081,13 @@ function scheduleMatch() {
 }
 
 function showUpdateScoreModal(matchId, homeTeamName, awayTeamName) {
+    // Check if user is admin
+    const isAdmin = {{ 'true' if is_admin else 'false' }};
+    if (!isAdmin) {
+        alert('Acesso negado. Apenas administradores podem editar partidas.');
+        return;
+    }
+    
     document.getElementById('matchId').value = matchId;
     document.getElementById('homeTeamName').textContent = homeTeamName;
     document.getElementById('awayTeamName').textContent = awayTeamName;
@@ -1164,7 +1171,14 @@ function updateMatchScore() {
 }
 
 function deleteMatch(matchId) {
-    if (!confirm('Are you sure you want to delete this match? This action cannot be undone.')) {
+    // Check if user is admin
+    const isAdmin = {{ 'true' if is_admin else 'false' }};
+    if (!isAdmin) {
+        alert('Acesso negado. Apenas administradores podem excluir partidas.');
+        return;
+    }
+    
+    if (!confirm('Tem certeza que deseja excluir esta partida? Esta ação não pode ser desfeita.')) {
         return;
     }
     
