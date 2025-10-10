@@ -1,6 +1,5 @@
 from . import db
 from datetime import datetime
-import pytz
 
 class Match(db.Model):
     __tablename__ = 'matches'
@@ -9,7 +8,7 @@ class Match(db.Model):
     home_team_id = db.Column(db.Integer, db.ForeignKey('teams.id'), nullable=False)
     away_team_id = db.Column(db.Integer, db.ForeignKey('teams.id'), nullable=False)
     tournament_id = db.Column(db.Integer, db.ForeignKey('tournaments.id'), nullable=False)
-    date = db.Column(db.DateTime(timezone=True), nullable=False)  # Timezone-aware
+    date = db.Column(db.DateTime, nullable=False)
     venue = db.Column(db.String(100))
     field = db.Column(db.String(10))  # 1, 2, 3, etc.
     stage = db.Column(db.String(50), default='group_stage')  # group_stage, round_of_16, quarter_final, semi_final, final
@@ -61,11 +60,3 @@ class Match(db.Model):
             return f"{self.home_score} - {self.away_score} (Live)"
         else:
             return "vs"
-    
-    def get_local_time(self, timezone_str='America/Sao_Paulo'):
-        """Convert UTC datetime to local timezone"""
-        if self.date:
-            utc_time = self.date.replace(tzinfo=pytz.UTC) if self.date.tzinfo is None else self.date
-            local_tz = pytz.timezone(timezone_str)
-            return utc_time.astimezone(local_tz)
-        return None

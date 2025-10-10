@@ -2,6 +2,12 @@
 
 {% block title %}{{ tournament.name }}{% endblock %}
 
+{% block head %}
+<style>
+/* Force refresh - v2.0 */
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="container mt-4">
     <!-- Tournament Header -->
@@ -193,10 +199,17 @@
                                             <td class="text-start">
                                                 <div class="d-flex align-items-center">
                                                     {% if standing.team.logo_url %}
-                                                        <img src="{{ standing.team.logo_url }}" alt="{{ standing.team.name }} Logo" class="img-fluid rounded me-2" style="width: 25px; height: 25px; object-fit: cover;">
+                                                        <img src="{{ standing.team.logo_url }}" 
+                                                             alt="{{ standing.team.name }} Logo" 
+                                                             class="img-fluid rounded me-2" 
+                                                             style="width: 35px; height: 35px; object-fit: cover;"
+                                                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                                        <div class="rounded me-2 d-flex align-items-center justify-content-center" style="width: 35px; height: 35px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; font-weight: bold; font-size: 14px; display: none;">
+                                                            {{ standing.team.name[:2].upper() }}
+                                                        </div>
                                                     {% else %}
-                                                        <div class="bg-light rounded d-flex align-items-center justify-content-center me-2" style="width: 25px; height: 25px;">
-                                                            <i class="fas fa-shield-alt text-muted" style="font-size: 12px;"></i>
+                                                        <div class="rounded me-2 d-flex align-items-center justify-content-center" style="width: 35px; height: 35px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; font-weight: bold; font-size: 14px;">
+                                                            {{ standing.team.name[:2].upper() }}
                                                         </div>
                                                     {% endif %}
                                                     <span class="fw-bold">{{ standing.team.name }}</span>
@@ -274,7 +287,7 @@
                                                 <small class="text-muted mb-1">Horário</small>
                                                 <span class="badge bg-primary fs-6 px-3 py-2">
                                                     <i class="fas fa-clock me-1"></i>
-                                                    {{ match.get_local_time().strftime('%H:%M') if match.date else 'TBD' }}
+                                                    {{ match.date.strftime('%H:%M') if match.date else 'TBD' }}
                                                 </span>
                                             </div>
                                         </div>
@@ -294,9 +307,18 @@
                                         <div class="col-5">
                                             <div class="d-flex flex-column align-items-center">
                                                 {% if match.home_team and match.home_team.logo_url %}
-                                                    <img src="{{ match.home_team.logo_url }}" alt="Logo" class="mb-2 rounded" style="width: 40px; height: 40px; object-fit: cover;">
+                                                    <img src="{{ match.home_team.logo_url }}" 
+                                                         alt="Logo" 
+                                                         class="mb-2 rounded" 
+                                                         style="width: 50px; height: 50px; object-fit: cover;"
+                                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                                    <div class="team-logo-placeholder mb-2" style="width: 50px; height: 50px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 50%; display: none; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 18px;">
+                                                        {{ match.home_team.name[:2].upper() if match.home_team else 'T' }}
+                                                    </div>
                                                 {% else %}
-                                                    <i class="fas fa-shield-alt fs-1 text-primary mb-2"></i>
+                                                    <div class="team-logo-placeholder mb-2" style="width: 50px; height: 50px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 18px;">
+                                                        {{ match.home_team.name[:2].upper() if match.home_team else 'T' }}
+                                                    </div>
                                                 {% endif %}
                                                 <span class="fw-bold">{{ match.home_team.name if match.home_team else 'TBD' }}</span>
                                                 {% if match.status == 'completed' %}
@@ -310,9 +332,18 @@
                                         <div class="col-5">
                                             <div class="d-flex flex-column align-items-center">
                                                 {% if match.away_team and match.away_team.logo_url %}
-                                                    <img src="{{ match.away_team.logo_url }}" alt="Logo" class="mb-2 rounded" style="width: 40px; height: 40px; object-fit: cover;">
+                                                    <img src="{{ match.away_team.logo_url }}" 
+                                                         alt="Logo" 
+                                                         class="mb-2 rounded" 
+                                                         style="width: 50px; height: 50px; object-fit: cover;"
+                                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                                    <div class="team-logo-placeholder mb-2" style="width: 50px; height: 50px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border-radius: 50%; display: none; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 18px;">
+                                                        {{ match.away_team.name[:2].upper() if match.away_team else 'T' }}
+                                                    </div>
                                                 {% else %}
-                                                    <i class="fas fa-shield-alt fs-1 text-primary mb-2"></i>
+                                                    <div class="team-logo-placeholder mb-2" style="width: 50px; height: 50px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 18px;">
+                                                        {{ match.away_team.name[:2].upper() if match.away_team else 'T' }}
+                                                    </div>
                                                 {% endif %}
                                                 <span class="fw-bold">{{ match.away_team.name if match.away_team else 'TBD' }}</span>
                                                 {% if match.status == 'completed' %}

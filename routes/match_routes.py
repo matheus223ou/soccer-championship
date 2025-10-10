@@ -3,7 +3,6 @@ from functools import wraps
 from models import Match, Team, Tournament, Group, db
 from datetime import datetime, timedelta
 import itertools
-import pytz
 
 match_bp = Blueprint('match', __name__)
 
@@ -151,21 +150,13 @@ def update_score(match_id):
     
     # Update time if provided (keep existing date, only change time)
     if match_time and match.date:
-        # Parse time (HH:MM format) - assume it's in Brazilian time
+        # Parse time (HH:MM format)
         time_parts = match_time.split(':')
         if len(time_parts) == 2:
             hour = int(time_parts[0])
             minute = int(time_parts[1])
-            
-            # Get Brazil timezone
-            br_tz = pytz.timezone('America/Sao_Paulo')
-            
-            # Create a naive datetime with the same date but new time
-            naive_dt = match.date.replace(hour=hour, minute=minute, second=0, microsecond=0, tzinfo=None)
-            
-            # Localize to Brazil timezone, then convert to UTC
-            local_dt = br_tz.localize(naive_dt)
-            match.date = local_dt.astimezone(pytz.UTC)
+            # Update only the time, keep the same date
+            match.date = match.date.replace(hour=hour, minute=minute, second=0, microsecond=0)
     
     # Update field if provided
     if field_number:
