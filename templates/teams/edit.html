@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Edit {{ team.name }}{% endblock %}
+{% block title %}Editar {{ team.name }}{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
@@ -9,28 +9,51 @@
             <div class="card">
                 <div class="card-header">
                     <h3 class="mb-0">
-                        <i class="fas fa-edit me-2"></i>Edit Team: {{ team.name }}
+                        <i class="fas fa-edit me-2"></i>Editar Time: {{ team.name }}
                     </h3>
                 </div>
                 <div class="card-body">
                     <form method="POST">
                         <div class="mb-3">
-                            <label for="name" class="form-label">Team Name *</label>
+                            <label for="name" class="form-label">Nome do Time *</label>
                             <input type="text" class="form-control" id="name" name="name" value="{{ team.name }}" required>
                         </div>
                         
                         <div class="mb-3">
-                            <label for="logo_url" class="form-label">Logo URL (Optional)</label>
-                            <input type="url" class="form-control" id="logo_url" name="logo_url" value="{{ team.logo_url or '' }}" placeholder="https://example.com/logo.png">
-                            <div class="form-text">Enter the URL of the team's logo image</div>
+                            <label for="logo_url" class="form-label">Logo do Time (URL)</label>
+                            
+                            <!-- Preview do logo atual -->
+                            <div class="mb-3 p-3 bg-light rounded text-center">
+                                {% if team.logo_url %}
+                                    <img src="{{ team.logo_url }}" 
+                                         alt="Logo atual" 
+                                         class="rounded-circle mb-2" 
+                                         style="width: 80px; height: 80px; object-fit: cover;"
+                                         onerror="this.onerror=null; this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22><circle cx=%2250%22 cy=%2250%22 r=%2250%22 fill=%22%23667eea%22/><text x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-size=%2235%22 fill=%22white%22 font-weight=%22bold%22>{{ team.name[:2].upper() }}</text></svg>';">
+                                    <p class="text-muted small mb-0">Logo atual</p>
+                                {% else %}
+                                    <div class="d-inline-block rounded-circle" style="width: 80px; height: 80px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 32px;">
+                                        {{ team.name[:2].upper() }}
+                                    </div>
+                                    <p class="text-muted small mb-0 mt-2">Sem logo - usando iniciais</p>
+                                {% endif %}
+                            </div>
+                            
+                            <input type="url" class="form-control" id="logo_url" name="logo_url" value="{{ team.logo_url or '' }}" placeholder="https://i.imgur.com/exemplo.png">
+                            <div class="form-text">
+                                <i class="fas fa-info-circle me-1"></i>
+                                Cole a URL da imagem do escudo aqui. Deixe em branco para usar as iniciais.
+                                <br>
+                                <small><strong>Dica:</strong> Use <a href="https://imgur.com/upload" target="_blank">Imgur</a> para hospedar imagens gratuitamente.</small>
+                            </div>
                         </div>
                         
                         <div class="d-flex gap-2">
                             <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-save me-2"></i>Save Changes
+                                <i class="fas fa-save me-2"></i>Salvar Alterações
                             </button>
-                            <a href="{{ url_for('team.view_team', team_id=team.id) }}" class="btn btn-outline-secondary">
-                                <i class="fas fa-arrow-left me-2"></i>Cancel
+                            <a href="{{ url_for('tournament.view_tournament', tournament_id=team.tournament_id) }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Voltar ao Campeonato
                             </a>
                         </div>
                     </form>

@@ -210,6 +210,11 @@
                                                         </div>
                                                     {% endif %}
                                                     <span class="fw-bold">{{ standing.team.name }}</span>
+                                                    {% if is_admin %}
+                                                    <a href="{{ url_for('team.edit_team', team_id=standing.team.id) }}" class="btn btn-sm btn-outline-primary ms-2" title="Editar Time">
+                                                        <i class="fas fa-edit"></i>
+                                                    </a>
+                                                    {% endif %}
                                                 </div>
                                             </td>
                                             <td class="text-center fw-bold">{{ standing.matches_played }}</td>
